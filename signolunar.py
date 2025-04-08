@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import swisseph as swe
 import datetime
@@ -26,10 +26,9 @@ def lunar_sign():
         moon_pos = swe.calc_ut(jd, swe.MOON)[0][0]
         sign = signs[int(moon_pos // 30)]
 
-        # ⚠️ Aqui está o retorno como texto puro
-        return sign, 200, {'Content-Type': 'text/plain'}
+        return jsonify({"sign": sign})
     except Exception as e:
-        return str(e), 500
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
