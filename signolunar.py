@@ -15,22 +15,20 @@ signs = [
 def lunar_sign():
     try:
         data = request.json
-        date_str = data['date']  # formato esperado: "23-02-1999"
-        time_str = data['time']  # formato: "13:30"
-        timezone = float(data['timezone'])  # exemplo: -3
+        date_str = data['date']
+        time_str = data['time']
+        timezone = float(data['timezone'])
 
-        # Transformar para datetime
-        dt = datetime.datetime.strptime(f"{date_str}T{time_str}", "%d-%m-%YT%H:%M")
+        dt = datetime.datetime.fromisoformat(f"{date_str}T{time_str}")
         utc_hour = dt.hour + dt.minute / 60 - timezone
 
         jd = swe.julday(dt.year, dt.month, dt.day, utc_hour)
         moon_pos = swe.calc_ut(jd, swe.MOON)[0][0]
         sign = signs[int(moon_pos // 30)]
 
-        return jsonify({"sign": sign})  # <-- Typebot pega isso!
-    
+        return jsonify({"sign": sign})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
