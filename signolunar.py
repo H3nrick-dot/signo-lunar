@@ -47,11 +47,13 @@ def lunar_sign():
         moon_pos = swe.calc_ut(jd, swe.MOON)[0][0]
         sun_pos = swe.calc_ut(jd, swe.SUN)[0][0]
 
-        sign = signs[int(moon_pos // 30)]
+        lunar_sign = signs[int(moon_pos // 30)]
+        solar_sign = signs[int(sun_pos // 30)]
         phase = get_lunar_phase(moon_pos, sun_pos)
 
         return jsonify({
-            "sign": sign,
+            "lunar_sign": lunar_sign,
+            "solar_sign": solar_sign,
             "phase": phase
         })
 
