@@ -12,6 +12,26 @@ signs = [
     "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"
 ]
 
+def get_lunar_phase(moon_long, sun_long):
+    diff = (moon_long - sun_long) % 360
+
+    if diff < 45:
+        return "Lua Nova 🌑"
+    elif diff < 90:
+        return "Lua Crescente 🌒"
+    elif diff < 135:
+        return "Quarto Crescente 🌓"
+    elif diff < 180:
+        return "Lua Gibosa Crescente 🌔"
+    elif diff < 225:
+        return "Lua Cheia 🌕"
+    elif diff < 270:
+        return "Lua Gibosa Minguante 🌖"
+    elif diff < 315:
+        return "Quarto Minguante 🌗"
+    else:
+        return "Lua Minguante 🌘"
+
 @app.route('/lunar-sign', methods=['POST'])
 def lunar_sign():
     try:
@@ -25,9 +45,16 @@ def lunar_sign():
 
         jd = swe.julday(dt.year, dt.month, dt.day, utc_hour)
         moon_pos = swe.calc_ut(jd, swe.MOON)[0][0]
-        sign = signs[int(moon_pos // 30)]
+        sun_pos = swe.calc_ut(jd, swe.SUN)[0][0]
 
-        return jsonify({"sign": sign})
+        sign = signs[int(moon_pos // 30)]
+        phase = get_lunar_phase(moon_pos, sun_pos)
+
+        return jsonify({
+            "sign": sign,
+            "phase": phase
+        })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
